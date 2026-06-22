@@ -29,3 +29,15 @@ graph.add_edge(START,'chat_node')
 graph.add_edge('chat_node',END)
 
 chatbot=graph.compile(checkpointer=checkpointer)
+
+ # streaming 
+# for message_chunk,metadata in chatbot.stream(
+#     {'messages':[HumanMessage(content='whats the recipe for alfredo pasta')]},
+#     config={'configurable':{'thread_id':'thread_1'}},
+#     stream_mode='messages'):
+
+#     if message_chunk.content:
+#         print(message_chunk.content,end=" ",flush=True)
+
+## print(type(stream))
+

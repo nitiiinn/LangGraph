@@ -1,5 +1,5 @@
 import streamlit as st
-from langgraph_backend_database import chatbot,retrieve_all_threads
+from langgraph_tool_backend import chatbot,retrieve_all_threads
 from langchain_core.messages import HumanMessage,AIMessage
 import uuid
 
@@ -78,7 +78,16 @@ if user_input:
     with st.chat_message('user'):
         st.text(user_input)
 
-    CONFIG={'configurable':{'thread_id':st.session_state['thread_id']}}
+    # CONFIG={'configurable':{'thread_id':st.session_state['thread_id']}}
+    
+    CONFIG = {
+        "configurable": {"thread_id": st.session_state["thread_id"]},
+        "metadata": {
+            "thread_id": st.session_state["thread_id"]
+        },
+        'run_name': 'chat_turn',
+    }
+
     # TAKING ANSWER FROM THE AI BASED ON THE USER INPUT and displaying it using streaming too
     with st.chat_message('assistant'):
         ai_msg=st.write_stream(message_chunk.content for message_chunk,metadata in  chatbot.stream(

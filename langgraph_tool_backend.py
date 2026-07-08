@@ -8,7 +8,7 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from langgraph.prebuilt import ToolNode,tools_condition
 from langchain_core.tools import tool
-from langchain_community.tools import DuckDuckGoSearchRun
+from duckduckgo_search import DDGS
 
 import requests 
 import random
@@ -21,8 +21,12 @@ llm= ChatGroq(
     temperature=0.5,
 )
 
-# tools 
-search_tool = DuckDuckGoSearchRun()
+@tool
+def search_tool(query: str, max_results: int = 5) -> list[dict]:
+    """Search the web using DuckDuckGo."""
+
+    with DDGS() as ddgs:
+        return list(ddgs.text(query, max_results=max_results))
 
 @tool
 def calculator( num1 : float,num2 : float , operation : str)-> dict:
@@ -46,14 +50,14 @@ def calculator( num1 : float,num2 : float , operation : str)-> dict:
     except Exception as e:
         return {str(e)}
     
+tools=[search_tool,calculator]
 
+llm_with_tools=llm.bind_tools(tools)
 
 class chatstate(TypedDict):
     messages : Annotated[list[BaseMessage],add_messages]
 
-tools=[search_tool,calculator]
 
-llm_with_tools=llm.bind_tools(tools)
 
 def chat_node(state:chatstate):
     messages=state['messages']  
